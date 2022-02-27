@@ -23,18 +23,15 @@ fn translate_rgb(
     let pixel_per_cell_y = cam_height / canvas_height as usize;
     let pixel_per_cell_x = cam_width / canvas_width as usize;
 
-    let mut num_pixels = 0;
-
-    let mut char_for_greyscale = |cur_x: usize, cur_y: usize| {
-        let local_x = cur_x * pixel_per_cell_x;
-        let local_y = cur_y * pixel_per_cell_y;
+    let char_for_greyscale = |cur_x: usize, cur_y: usize| {
+        let local_x = cur_x * pixel_per_cell_x * 3;
+        let local_y = cur_y * pixel_per_cell_y * 3;
         let mut pixels = Vec::with_capacity(pixel_per_cell_x * pixel_per_cell_y);
-        for y in local_y..(local_y + pixel_per_cell_y) {
-            for x in local_x..(local_x + pixel_per_cell_x) {
-                num_pixels += 1;
-                let r = buffer[cam_width * y * 3 + x];
-                let g = buffer[cam_width * y * 3 + x + 1];
-                let b = buffer[cam_width * y * 3 + x + 2];
+        for y in (local_y..(local_y + pixel_per_cell_y * 3)).step_by(3) {
+            for x in (local_x..(local_x + pixel_per_cell_x * 3)).step_by(3) {
+                let r = buffer[cam_width * y + x];
+                let g = buffer[cam_width * y + x + 1];
+                let b = buffer[cam_width * y + x + 2];
                 let greyscale = (r as u32 + g as u32 + b as u32) / 3;
                 pixels.push(greyscale as u32);
             }
@@ -52,9 +49,6 @@ fn translate_rgb(
                 char_for_greyscale(col as usize, row as usize);
         }
     }
-
-    info!("Processed pixels: {}", num_pixels);
-    info!("Available pixels: {}", buffer.len() / 3);
 
     asciibuffer
 }
