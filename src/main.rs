@@ -2,6 +2,7 @@ mod canvas;
 
 use canvas::canvas::{Canvas, Dim};
 use canvas::terminal::terminal::*;
+use clap::{arg, Command};
 use log::info;
 use nokhwa::{Camera, CaptureAPIBackend, FrameFormat};
 use simple_logger::SimpleLogger;
@@ -58,14 +59,23 @@ const HEIGHT: u32 = 720;
 const FPS: u32 = 30;
 
 fn main() -> Result<(), std::io::Error> {
+    let matches = Command::new("asciicam")
+        .version("0.0.1")
+        .author("ndzik <norbert@perun.network>")
+        .about("Commandline application to view your ASCII encoded webcam feed")
+        .arg(arg!(-l - -log).required(false))
+        .get_matches();
+
+    if matches.is_present("log") {
+        SimpleLogger::new().init().unwrap();
+    }
+
     let chars: Vec<u8> =
-        b"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:.                    "
+        b"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:.                                      "
             .iter()
             .rev()
             .cloned()
             .collect();
-
-    SimpleLogger::new().init().unwrap();
 
     let mut camera = Camera::new_with(
         0,

@@ -13,3 +13,4 @@ simple_logger = { version = "2.1.0", features = ["stderr"] }
 nokhwa = { version = "0.9.4", features= ["input-v4l"] }
 bytes = "1.1.0"
 image = "0.24.0"
+clap = { version = "3.0", features = ["derive"] }
