@@ -1,5 +1,7 @@
+mod asciitable;
 mod canvas;
 
+use asciitable::ASCIITable;
 use canvas::canvas::{Canvas, Dim};
 use canvas::terminal::terminal::*;
 use clap::{arg, Command};
@@ -12,47 +14,6 @@ use std::time::{Duration, Instant};
 const WIDTH: u32 = 1280;
 const HEIGHT: u32 = 720;
 const FPS: u32 = 30;
-
-struct ASCIITable {
-    table: Vec<u8>,
-    init_len: usize,
-    is_reversed: bool,
-}
-
-impl ASCIITable {
-    fn inc_threshold(&mut self) {
-        if self.is_reversed {
-            self.table.insert(0, ' ' as u8);
-        } else {
-            self.table.push(' ' as u8);
-        }
-    }
-
-    fn dec_threshold(&mut self) {
-        if self.table.len() == self.init_len {
-            return;
-        }
-
-        if self.is_reversed {
-            self.table.remove(0);
-        } else {
-            self.table.pop();
-        }
-    }
-
-    fn reset_threshold(&mut self) {
-        if self.is_reversed {
-            let r = self.table.len() - self.init_len;
-            self.table.drain(0..r);
-        } else {
-            self.table.truncate(self.init_len);
-        }
-    }
-
-    fn threshold(&self) -> usize {
-        self.table.len() - self.init_len
-    }
-}
 
 fn main() -> Result<(), std::io::Error> {
     let asciitable =
