@@ -23,7 +23,12 @@ fn main() -> Result<(), std::io::Error> {
         .version("0.0.1")
         .author("ndzik <norbert@perun.network>")
         .about("Commandline application to view your ASCII encoded webcam feed")
-        .arg(arg!(-l - -log).required(false))
+        .arg(
+            arg!(-s - -source)
+                .help("/dev/video<N> source to capture from")
+                .default_value("0"),
+        )
+        .arg(arg!(-l - -log).help("enable logging").required(false))
         .arg(
             arg!(-i - -invert)
                 .help("invert the images brightness values")
@@ -51,8 +56,13 @@ fn main() -> Result<(), std::io::Error> {
         },
     };
 
+    let source = matches
+        .value_of("source")
+        .and_then(|s| s.parse::<usize>().ok())
+        .unwrap();
+
     let mut camera = Camera::new_with(
-        0,
+        source,
         WIDTH,
         HEIGHT,
         FPS,
