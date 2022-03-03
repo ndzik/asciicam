@@ -4,7 +4,7 @@ use canvas::canvas::{Canvas, Dim};
 use canvas::terminal::terminal::*;
 use clap::{arg, Command};
 use crossterm::event::{Event, KeyCode};
-use log::info;
+use log::{info, trace, LevelFilter};
 use nokhwa::{Camera, CaptureAPIBackend, FrameFormat};
 use simple_logger::SimpleLogger;
 use std::time::{Duration, Instant};
@@ -56,7 +56,13 @@ fn main() -> Result<(), std::io::Error> {
         if crossterm::event::poll(Duration::from_millis(10))? {
             if let Event::Key(key) = crossterm::event::read()? {
                 match key.code {
-                    KeyCode::Char('q') => return Ok(()),
+                    KeyCode::Char('q') => {
+                        info!("Qutting...");
+                        return Ok(());
+                    }
+                    KeyCode::Char(c) => {
+                        info!("Pressing {}", c);
+                    }
                     _ => {}
                 }
             }
@@ -70,8 +76,8 @@ fn main() -> Result<(), std::io::Error> {
         let after_capture = Instant::now();
 
         let (dimx, dimy) = frame.dimensions();
-        info!("frame dimension: {}x{}", dimx, dimy);
-        info!("frame length: {}", frame.len());
+        trace!("frame dimension: {}x{}", dimx, dimy);
+        trace!("frame length: {}", frame.len());
 
         let before_translation = Instant::now();
         let ascii_image = translate_rgb(
@@ -89,21 +95,21 @@ fn main() -> Result<(), std::io::Error> {
         }
         let after_draw = Instant::now();
 
-        info!(
+        trace!(
             "capture time: {}",
             after_capture.duration_since(before_capture).as_millis()
         );
-        info!(
+        trace!(
             "translation time: {}",
             after_translation
                 .duration_since(before_translation)
                 .as_millis()
         );
-        info!(
+        trace!(
             "draw time: {}",
             after_draw.duration_since(before_draw).as_millis()
         );
-        info!(
+        trace!(
             "frame time: {}",
             after_draw.duration_since(before_capture).as_millis()
         );
